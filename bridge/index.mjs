@@ -78,8 +78,35 @@ function printBanner() {
 }
 
 // ---------- actions from the phone ----------
+const APP_ALIASES = {
+  spotify: 'spotify:',
+  discord: 'discord:',
+  steam: 'steam://open/games',
+  whatsapp: 'whatsapp:',
+  telegram: 'tg:',
+  chrome: 'chrome',
+  edge: 'msedge',
+  firefox: 'firefox',
+  code: 'code',
+  calc: 'calc',
+  notepad: 'notepad',
+  explorer: 'explorer',
+  terminal: 'wt',
+}
+
+function openApp(target) {
+  if (!target) return
+  const alias = APP_ALIASES[String(target).toLowerCase().trim()]
+  const what = alias || target
+  log('Opening app:', what)
+  spawn('cmd', ['/c', 'start', '', what], { detached: true, stdio: 'ignore' }).unref()
+}
+
 function handleAction(a) {
   switch (a.kind) {
+    case 'app':
+      openApp(a.app)
+      break
     case 'url':
       if (a.url) {
         log('Opening link/path:', a.url)

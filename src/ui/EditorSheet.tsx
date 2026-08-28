@@ -59,6 +59,19 @@ const ACTIONS: { value: ActionKind; label: string }[] = [
   { value: 'toggle', label: 'Toggle' },
   { value: 'counter', label: 'Counter' },
   { value: 'url', label: 'Open link / route' },
+  { value: 'app', label: 'Open app (PC)' },
+]
+
+const APP_PRESETS: { name: string; app: string; icon: string }[] = [
+  { name: 'Spotify', app: 'spotify', icon: '🎧' },
+  { name: 'Discord', app: 'discord', icon: '💬' },
+  { name: 'Steam', app: 'steam', icon: '🕹️' },
+  { name: 'Chrome', app: 'chrome', icon: '🌐' },
+  { name: 'WhatsApp', app: 'whatsapp', icon: '🟢' },
+  { name: 'VS Code', app: 'code', icon: '💻' },
+  { name: 'Calc', app: 'calc', icon: '🧮' },
+  { name: 'Notepad', app: 'notepad', icon: '📝' },
+  { name: 'Explorer', app: 'explorer', icon: '📁' },
 ]
 
 export function EditorSheet() {
@@ -272,6 +285,36 @@ export function EditorSheet() {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {a.kind === 'app' && (
+        <div className="stack">
+          <div className="chips">
+            {APP_PRESETS.map((p) => (
+              <button
+                key={p.app}
+                className={'chip sel-btn' + (a.app === p.app ? ' sel' : '')}
+                onClick={() => updateKey(index, { icon: p.icon, action: { ...a, app: p.app } })}
+              >
+                {p.icon} {p.name}
+              </button>
+            ))}
+          </div>
+          <label className="field">
+            <span>App name or .exe/.lnk path</span>
+            <input
+              value={a.app ?? ''}
+              onChange={(e) => patchAction({ app: e.target.value })}
+              placeholder="spotify  ·  C:\Program Files\App\app.exe"
+              autoCapitalize="off"
+              autoCorrect="off"
+            />
+          </label>
+          <p className="hint-text">
+            Opens on your PC when linked. Use a preset, an app name, or the full path to a
+            .exe or .lnk shortcut.
+          </p>
         </div>
       )}
 

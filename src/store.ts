@@ -327,6 +327,13 @@ export const useStore = create<AppState>()(
               }
               break
             }
+            case 'app':
+              if (link.connected) {
+                get().linkPc({ kind: 'app', app: a.app })
+              } else {
+                get().showToast('Link with your PC to open apps')
+              }
+              break
             case 'none':
               get().showToast('No action assigned — edit this key')
               break

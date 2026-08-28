@@ -6,6 +6,7 @@ export type ActionKind =
   | 'toggle'
   | 'counter'
   | 'url'
+  | 'app'
   | 'obs-scene'
   | 'obs-mute'
   | 'obs-stream'
@@ -17,6 +18,7 @@ export interface KeyAction {
   soundId?: string
   seconds?: number
   url?: string
+  app?: string
   scene?: string
   source?: string
 }
