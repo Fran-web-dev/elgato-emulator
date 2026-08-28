@@ -20,7 +20,13 @@ export function KeyFace({ cfg, rt, editMode }: Props) {
   const fg = contrastFg(bg)
 
   return (
-    <div className="keyface" style={{ background: bg, color: fg }}>
+    <div
+      className="keyface glass"
+      style={{
+        background: `linear-gradient(155deg, color-mix(in srgb, ${bg} 88%, white 12%) 0%, color-mix(in srgb, ${bg} 78%, transparent) 45%, color-mix(in srgb, ${bg} 92%, black 8%) 100%)`,
+        color: fg,
+      }}
+    >
       {cfg?.iconImage ? (
         <img className="keyface-img" src={cfg.iconImage} alt="" />
       ) : a?.kind === 'timer' && (timerOn || timerDone) ? (

@@ -70,6 +70,7 @@ interface AppState {
   selectedId: string | null
   sounds: SoundItem[]
   viewMode: '3d' | 'grid'
+  gridBg: string
   link: { url: string; code: string; status: LinkStatus; error?: string }
   runtime: Record<string, RuntimeState>
   toast: string | null
@@ -85,6 +86,7 @@ interface AppState {
   updateKey: (index: number, patch: Partial<KeyConfig>) => void
   removeKey: (index: number) => void
   setViewMode: (mode: '3d' | 'grid') => void
+  setGridBg: (bg: string) => void
   setLinkState: (patch: Partial<{ url: string; code: string; status: LinkStatus; error: string }>) => void
   linkPc: (action: Record<string, unknown>) => void
   addSound: (name: string, dataUrl: string) => boolean
@@ -141,6 +143,7 @@ export const useStore = create<AppState>()(
         selectedId: null,
         sounds: [],
         viewMode: defaultViewMode(),
+        gridBg: 'aurora',
         link: { url: '', code: '', status: 'disconnected' },
         runtime: {},
         toast: null,
@@ -240,6 +243,7 @@ export const useStore = create<AppState>()(
         removeSound: (id) => set((s) => ({ sounds: s.sounds.filter((x) => x.id !== id) })),
 
         setViewMode: (mode) => set({ viewMode: mode }),
+        setGridBg: (bg) => set({ gridBg: bg }),
         setLinkState: (patch) => set((s) => ({ link: { ...s.link, ...patch } })),
         linkPc: (action) => link.send({ t: 'key', action }),
 
@@ -358,6 +362,7 @@ export const useStore = create<AppState>()(
         currentPageId: s.currentPageId,
         sounds: s.sounds,
         viewMode: s.viewMode,
+        gridBg: s.gridBg,
         link: { url: s.link.url, code: s.link.code, status: 'disconnected' as LinkStatus },
       }),
     },
