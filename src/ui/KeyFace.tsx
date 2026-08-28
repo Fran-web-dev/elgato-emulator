@@ -37,7 +37,7 @@ export function KeyFace({ cfg, rt }: Props) {
       <span
         className={'key-tile' + (active ? ' on' : '')}
         style={{
-          background: `linear-gradient(160deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.06) 42%, rgba(0,0,0,0.10) 78%, rgba(0,0,0,0.22) 100%), ${tile}`,
+          background: `linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.05) 42%, rgba(0,0,0,0.08) 78%, rgba(0,0,0,0.18) 100%), color-mix(in srgb, ${tile} 82%, transparent)`,
         }}
       >
         {cfg.iconImage ? (
