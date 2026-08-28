@@ -23,10 +23,10 @@ class LinkService {
     this.disconnect()
     this.setStatus('connecting')
     try {
-      const ws = new WebSocket(relayUrl)
+      const base = relayUrl.trim().replace(/\/+$/, '')
+      const ws = new WebSocket(`${base}/?mode=join&code=${encodeURIComponent(code.trim())}`)
       this.ws = ws
       ws.onopen = () => {
-        ws.send(JSON.stringify({ t: 'join', code: code.trim() }))
         this.setStatus('connected')
       }
       ws.onerror = () => {

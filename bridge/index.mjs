@@ -39,12 +39,12 @@ function log(...a) {
 
 // ---------- relay ----------
 function connectRelay() {
-  const ws = new WebSocket(RELAY)
+  const base = RELAY.trim().replace(/\/+$/, '')
+  const qs = FIXED_CODE ? `&code=${encodeURIComponent(FIXED_CODE)}` : ''
+  const ws = new WebSocket(`${base}/?mode=host${qs}`)
   relayWs = ws
   ws.on('open', () => {
-    const hello = { t: 'host' }
-    if (FIXED_CODE) hello.code = FIXED_CODE
-    ws.send(JSON.stringify(hello))
+    /* room opened via ?mode=host */
   })
   ws.on('message', (data) => {
     let m
