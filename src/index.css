@@ -566,6 +566,106 @@ body {
   object-fit: contain;
 }
 
+/* premium Stream Deck keycap: glossy black glass + centered app-icon tile */
+.keyface.premium {
+  background: linear-gradient(163deg, #343947 0%, #15171f 38%, #07080c 78%, #040509 100%);
+}
+
+.keyface.premium::before {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.07) 26%,
+    transparent 46%,
+    rgba(255, 255, 255, 0.04) 74%,
+    rgba(0, 0, 0, 0.25) 100%
+  );
+}
+
+.keyface.premium::after {
+  left: 6%;
+  right: 6%;
+  top: 3%;
+  height: 34%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.08) 60%,
+    transparent
+  );
+}
+
+.keyface.premium.ghost-face {
+  background: rgba(16, 18, 25, 0.6);
+}
+
+.key-tile {
+  position: relative;
+  width: 58%;
+  aspect-ratio: 1;
+  border-radius: 24%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    0 3px 7px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -5px 9px rgba(0, 0, 0, 0.3);
+  transition: transform 0.07s ease, box-shadow 0.07s ease;
+}
+
+.key-tile.on {
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.55),
+    0 0 12px rgba(255, 255, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -5px 9px rgba(0, 0, 0, 0.3);
+}
+
+.key-tile-icon {
+  font-size: clamp(20px, 6vw, 30px);
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.key-tile-img {
+  width: 74%;
+  height: 74%;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.key-tile-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  line-height: 1.05;
+}
+
+.key-tile-text b {
+  font-size: clamp(15px, 4.6vw, 22px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.key-tile-text i {
+  font-style: normal;
+  font-size: clamp(7px, 2vw, 9px);
+  font-weight: 700;
+  opacity: 0.85;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.keyface.premium .keyface-label {
+  margin-top: 3px;
+  color: #cfd4e0;
+  font-size: clamp(8px, 2.1vw, 10.5px);
+}
+
 .keyface-active {
   position: absolute;
   inset: 3px;

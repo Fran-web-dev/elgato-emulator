@@ -79,8 +79,7 @@ function GridKey({ index, cfg }: { index: number; cfg: KeyConfig | null }) {
       className={'gkey' + (cfg ? '' : ' ghost') + (editMode ? ' edit' : '')}
       onClick={onTap}
     >
-      {cfg || editMode ? <KeyFace cfg={cfg} rt={rt} editMode={editMode} /> : null}
-      {!cfg && editMode && <span className="gkey-plus">＋</span>}
+      {cfg || editMode ? <KeyFace cfg={cfg} rt={rt} /> : null}
     </button>
   )
 }
