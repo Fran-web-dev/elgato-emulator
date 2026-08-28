@@ -554,12 +554,12 @@ body {
 /* ---------- background picker ---------- */
 .bg-picker-wrap {
   position: fixed;
-  right: calc(env(safe-area-inset-right, 0px) + 14px);
+  left: calc(env(safe-area-inset-left, 0px) + 14px);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
   z-index: 15;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 8px;
 }
 
