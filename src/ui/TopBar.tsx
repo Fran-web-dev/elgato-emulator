@@ -14,11 +14,10 @@ export function TopBar() {
   const addLinkShortcut = useStore((s) => s.addLinkShortcut)
   const viewMode = useStore((s) => s.viewMode)
   const setViewMode = useStore((s) => s.setViewMode)
-  const obsStatus = useStore((s) => s.obsStatus)
   const linkState = useStore((s) => s.link)
   const [panelOpen, setPanelOpen] = useState(false)
 
-  const connected = obsStatus.connected || linkState.status === 'connected'
+  const connected = linkState.status === 'connected'
 
   return (
     <>

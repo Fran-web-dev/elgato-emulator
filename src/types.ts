@@ -48,18 +48,7 @@ export interface RuntimeState {
   timerLeft?: number
   timerRunning?: boolean
   timerDone?: boolean
-}
-
-export interface ObsStatus {
-  connected: boolean
-  error?: string
-  scene?: string
-  streaming?: boolean
-  recording?: boolean
-  muted: string[]
-}
-
-export const KEY_COUNT = 15
+}export const KEY_COUNT = 15
 export const BUILTIN_SOUNDS = [
   { id: 'builtin:beep', name: 'Beep' },
   { id: 'builtin:chirp', name: 'Chirp' },
@@ -103,19 +92,6 @@ export function formatSeconds(total: number): string {
   return `${m}:${String(r).padStart(2, '0')}`
 }
 
-export function keyActive(cfg: KeyConfig, obs: ObsStatus, rt?: RuntimeState): boolean {
-  switch (cfg.action.kind) {
-    case 'obs-stream':
-      return !!obs.streaming
-    case 'obs-record':
-      return !!obs.recording
-    case 'obs-mute':
-      return obs.muted.includes(cfg.action.source || 'Mic/Aux')
-    case 'obs-scene':
-      return obs.scene === cfg.action.scene
-    case 'toggle':
-      return !!rt?.toggleOn
-    default:
-      return false
-  }
+export function keyActive(cfg: KeyConfig, rt?: RuntimeState): boolean {
+  return cfg.action.kind === 'toggle' && !!rt?.toggleOn
 }

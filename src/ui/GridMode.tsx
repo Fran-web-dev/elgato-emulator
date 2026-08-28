@@ -5,7 +5,6 @@ import type { KeyConfig } from '../types'
 function GridKey({ index, cfg }: { index: number; cfg: KeyConfig | null }) {
   const editMode = useStore((s) => s.editMode)
   const rt = useStore((s) => (cfg ? s.runtime[cfg.id] : undefined))
-  const obsStatus = useStore((s) => s.obsStatus)
   const press = useStore((s) => s.press)
   const select = useStore((s) => s.select)
   const addKey = useStore((s) => s.addKey)
@@ -27,7 +26,7 @@ function GridKey({ index, cfg }: { index: number; cfg: KeyConfig | null }) {
       onClick={onTap}
     >
       {cfg || editMode ? (
-        <KeyFace cfg={cfg} rt={rt} obsStatus={obsStatus} editMode={editMode} />
+        <KeyFace cfg={cfg} rt={rt} editMode={editMode} />
       ) : null}
       {!cfg && editMode && <span className="gkey-plus">＋</span>}
     </button>

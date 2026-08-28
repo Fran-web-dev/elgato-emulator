@@ -4,6 +4,7 @@ import { RoundedBox } from '@react-three/drei'
 import * as THREE from 'three'
 import { useStore } from '../store'
 import type { KeyConfig } from '../types'
+import { keyActive } from '../types'
 import { drawKey } from './keyTexture'
 interface Props {
   position: [number, number, number]
@@ -14,7 +15,6 @@ interface Props {
 export function Key3D({ position, index, cfg }: Props) {
   const editMode = useStore((s) => s.editMode)
   const runtime = useStore((s) => (cfg ? s.runtime[cfg.id] : undefined))
-  const obsStatus = useStore((s) => s.obsStatus)
   const press = useStore((s) => s.press)
   const select = useStore((s) => s.select)
   const addKey = useStore((s) => s.addKey)
@@ -44,12 +44,7 @@ export function Key3D({ position, index, cfg }: Props) {
   }, [])
 
   useEffect(() => {
-    const active =
-      !!cfg &&
-      ((cfg.action.kind === 'obs-stream' && obsStatus.streaming) ||
-        (cfg.action.kind === 'obs-record' && obsStatus.recording) ||
-        (cfg.action.kind === 'obs-mute' && obsStatus.muted.includes(cfg.action.source || 'Mic/Aux')) ||
-        (cfg.action.kind === 'obs-scene' && obsStatus.scene === cfg.action.scene))
+    const active = cfg ? keyActive(cfg, runtime) : false
     drawKey(canvas, cfg, runtime, {
       ghost: !cfg,
       active,
@@ -57,7 +52,7 @@ export function Key3D({ position, index, cfg }: Props) {
       pressed,
     }, img)
     texture.needsUpdate = true
-  }, [canvas, texture, cfg, runtime, obsStatus, editMode, pressed, img])
+  }, [canvas, texture, cfg, runtime, editMode, pressed, img])
 
   useFrame((_, dt) => {
     if (bodyRef.current) {

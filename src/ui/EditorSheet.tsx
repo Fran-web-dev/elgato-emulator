@@ -58,11 +58,7 @@ const ACTIONS: { value: ActionKind; label: string }[] = [
   { value: 'timer', label: 'Timer' },
   { value: 'toggle', label: 'Toggle' },
   { value: 'counter', label: 'Counter' },
-  { value: 'url', label: 'Open URL' },
-  { value: 'obs-scene', label: 'OBS: Switch scene' },
-  { value: 'obs-mute', label: 'OBS: Toggle mute' },
-  { value: 'obs-stream', label: 'OBS: Toggle stream' },
-  { value: 'obs-record', label: 'OBS: Toggle record' },
+  { value: 'url', label: 'Open link / route' },
 ]
 
 export function EditorSheet() {
@@ -70,7 +66,6 @@ export function EditorSheet() {
   const pages = useStore((s) => s.pages)
   const currentPageId = useStore((s) => s.currentPageId)
   const sounds = useStore((s) => s.sounds)
-  const obsScenes = useStore((s) => s.obsScenes)
   const updateKey = useStore((s) => s.updateKey)
   const removeKey = useStore((s) => s.removeKey)
   const select = useStore((s) => s.select)
@@ -320,37 +315,6 @@ export function EditorSheet() {
             web links, folders or files (e.g. D:\Music) all work.
           </p>
         </div>
-      )}
-
-      {a.kind === 'obs-scene' && (
-        <label className="field">
-          <span>Scene</span>
-          {obsScenes.length > 0 ? (
-            <select value={a.scene ?? ''} onChange={(e) => patchAction({ scene: e.target.value })}>
-              <option value="" disabled>Pick a scene…</option>
-              {obsScenes.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          ) : (
-            <input
-              value={a.scene ?? ''}
-              onChange={(e) => patchAction({ scene: e.target.value })}
-              placeholder="Connect OBS to list scenes, or type name"
-            />
-          )}
-        </label>
-      )}
-
-      {a.kind === 'obs-mute' && (
-        <label className="field">
-          <span>Input name</span>
-          <input
-            value={a.source ?? 'Mic/Aux'}
-            onChange={(e) => patchAction({ source: e.target.value })}
-            placeholder="Mic/Aux"
-          />
-        </label>
       )}
     </div>
   )

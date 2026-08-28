@@ -1,9 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { KeyConfig, KeyAction, Page, SoundItem, RuntimeState, ObsStatus } from './types'
+import type { KeyConfig, KeyAction, Page, SoundItem, RuntimeState } from './types'
 import { KEY_COUNT, normalizeUrl } from './types'
 import { playSound, timerBeep } from './audio'
-import { obs } from './obs'
 import { link } from './link'
 import type { LinkStatus } from './link'
 
@@ -33,19 +32,19 @@ function defaultPages(): Page[] {
       id: 'home',
       name: 'Home',
       keys: [
-        makeKey({ label: 'Starting', icon: '🎬', bg: '#1f6feb', action: { kind: 'obs-scene', scene: 'Starting Soon' } }),
-        makeKey({ label: 'Gameplay', icon: '🎮', bg: '#8b5cf6', action: { kind: 'obs-scene', scene: 'Gameplay' } }),
-        makeKey({ label: 'Chatting', icon: '🎙️', bg: '#0ea5e9', action: { kind: 'obs-scene', scene: 'Just Chatting' } }),
-        makeKey({ label: 'Mute', icon: '🔇', bg: '#374151', action: { kind: 'obs-mute', source: 'Mic/Aux' } }),
-        makeKey({ label: 'Stream', icon: '📡', bg: '#dc2626', action: { kind: 'obs-stream' } }),
-        makeKey({ label: 'Record', icon: '⏺️', bg: '#b45309', action: { kind: 'obs-record' } }),
-        makeKey({ label: 'Timer', icon: '⏱️', bg: '#059669', action: { kind: 'timer', seconds: 300 } }),
+        makeKey({ label: 'Timer 1m', icon: '⏱️', bg: '#059669', action: { kind: 'timer', seconds: 60 } }),
+        makeKey({ label: 'Timer 5m', icon: '⏱️', bg: '#0d9488', action: { kind: 'timer', seconds: 300 } }),
         makeKey({ label: 'Counter', icon: '🔢', bg: '#7c3aed', action: { kind: 'counter' } }),
         makeKey({ label: 'Lights', icon: '💡', bg: '#ca8a04', action: { kind: 'toggle' } }),
         makeKey({ label: 'Beep', icon: '🔔', bg: '#334155', action: { kind: 'sound', soundId: 'builtin:beep' } }),
+        makeKey({ label: 'Chirp', icon: '🐦', bg: '#0f766e', action: { kind: 'sound', soundId: 'builtin:chirp' } }),
         makeKey({ label: 'Kick', icon: '🥁', bg: '#9d174d', action: { kind: 'sound', soundId: 'builtin:kick' } }),
-        makeKey({ label: 'Open', icon: '🌐', bg: '#2563eb', action: { kind: 'url', url: 'https://example.com' } }),
+        makeKey({ label: 'Win', icon: '🏆', bg: '#b45309', action: { kind: 'sound', soundId: 'builtin:success' } }),
+        makeKey({ label: 'YouTube', icon: '▶️', bg: '#dc2626', action: { kind: 'url', url: 'https://youtube.com' } }),
+        makeKey({ label: 'GitHub', icon: '🐙', bg: '#1f2937', action: { kind: 'url', url: 'https://github.com' } }),
         makeKey({ label: 'Fun', icon: '🎉', bg: '#db2777', action: { kind: 'page', pageId: 'fun' } }),
+        null,
+        null,
         null,
         null,
       ],
@@ -71,9 +70,6 @@ interface AppState {
   selectedId: string | null
   sounds: SoundItem[]
   viewMode: '3d' | 'grid'
-  obsSettings: { url: string; password: string }
-  obsStatus: ObsStatus
-  obsScenes: string[]
   link: { url: string; code: string; status: LinkStatus; error?: string }
   runtime: Record<string, RuntimeState>
   toast: string | null
@@ -93,9 +89,6 @@ interface AppState {
   linkPc: (action: Record<string, unknown>) => void
   addSound: (name: string, dataUrl: string) => boolean
   removeSound: (id: string) => void
-  setObsSettings: (patch: Partial<{ url: string; password: string }>) => void
-  setObsStatus: (patch: Partial<ObsStatus>) => void
-  setObsScenes: (scenes: string[]) => void
   showToast: (msg: string) => void
   press: (keyId: string) => void
   bumpRuntime: (keyId: string, patch: RuntimeState) => void
@@ -148,9 +141,6 @@ export const useStore = create<AppState>()(
         selectedId: null,
         sounds: [],
         viewMode: defaultViewMode(),
-        obsSettings: { url: 'ws://localhost:4455', password: '' },
-        obsStatus: { connected: false, muted: [] },
-        obsScenes: [],
         link: { url: '', code: '', status: 'disconnected' },
         runtime: {},
         toast: null,
@@ -253,9 +243,6 @@ export const useStore = create<AppState>()(
         setLinkState: (patch) => set((s) => ({ link: { ...s.link, ...patch } })),
         linkPc: (action) => link.send({ t: 'key', action }),
 
-        setObsSettings: (patch) => set((s) => ({ obsSettings: { ...s.obsSettings, ...patch } })),
-        setObsStatus: (patch) => set((s) => ({ obsStatus: { ...s.obsStatus, ...patch } })),
-        setObsScenes: (scenes) => set({ obsScenes: scenes }),
 
         showToast: (msg) => {
           set({ toast: msg })
@@ -336,18 +323,6 @@ export const useStore = create<AppState>()(
               }
               break
             }
-            case 'obs-scene':
-            case 'obs-mute':
-            case 'obs-stream':
-            case 'obs-record':
-              if (link.connected) {
-                get().linkPc({ kind: a.kind, scene: a.scene, source: a.source })
-              } else {
-                obs
-                  .exec({ kind: a.kind, scene: a.scene, source: a.source })
-                  .catch((e: Error) => get().showToast(`OBS: ${e.message}`))
-              }
-              break
             case 'none':
               get().showToast('No action assigned — edit this key')
               break
@@ -357,10 +332,25 @@ export const useStore = create<AppState>()(
     },
     {
       name: 'streamdeck-emulator',
-      version: 1,
-      migrate: (persisted) => {
+      version: 2,
+      migrate: (persisted, v) => {
         const next = { ...(persisted as Record<string, unknown>) }
-        delete next.viewMode
+        if ((v as number) < 1) delete next.viewMode
+        if ((v as number) < 2) {
+          delete next.obsSettings
+          delete next.obsStatus
+          delete next.obsScenes
+          const pages = next.pages as Page[] | undefined
+          if (Array.isArray(pages)) {
+            for (const p of pages) {
+              p.keys = p.keys.map((k) =>
+                k && k.action.kind.startsWith('obs-')
+                  ? { ...k, action: { kind: 'none' } as KeyAction }
+                  : k,
+              )
+            }
+          }
+        }
         return next as unknown as AppState
       },
       partialize: (s) => ({
@@ -368,27 +358,13 @@ export const useStore = create<AppState>()(
         currentPageId: s.currentPageId,
         sounds: s.sounds,
         viewMode: s.viewMode,
-        obsSettings: s.obsSettings,
         link: { url: s.link.url, code: s.link.code, status: 'disconnected' as LinkStatus },
       }),
     },
   ),
 )
 
-obs.onStatus((patch) => useStore.getState().setObsStatus(patch))
-obs.onScenes((scenes) => useStore.getState().setObsScenes(scenes))
-
-link.onMessage((m) => {
-  const s = useStore.getState()
-  if (m.t === 'state') {
-    const status = m.status as ObsStatus | undefined
-    if (status) s.setObsStatus({ ...status, connected: true })
-    const scenes = m.scenes as string[] | undefined
-    if (scenes) s.setObsScenes(scenes)
-  }
-})
 link.onStatus(({ status, error }) => {
   const s = useStore.getState()
   s.setLinkState({ status, error })
-  if (status === 'connected' && obs.isConnected) obs.disconnect()
 })

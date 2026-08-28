@@ -1,18 +1,17 @@
-import type { KeyConfig, ObsStatus, RuntimeState } from '../types'
+import type { KeyConfig, RuntimeState } from '../types'
 import { contrastFg, formatSeconds, keyActive } from '../types'
 
 interface Props {
   cfg: KeyConfig | null
   rt?: RuntimeState
-  obsStatus: ObsStatus
   editMode: boolean
 }
 
-export function KeyFace({ cfg, rt, obsStatus, editMode }: Props) {
+export function KeyFace({ cfg, rt, editMode }: Props) {
   const a = cfg?.action
   const timerOn = !!rt?.timerRunning
   const timerDone = !!rt?.timerDone
-  const active = cfg ? keyActive(cfg, obsStatus, rt) : false
+  const active = cfg ? keyActive(cfg, rt) : false
 
   let bg = cfg?.bg ?? (editMode ? '#1a1e28' : '#12141b')
   if (a?.kind === 'toggle' && rt?.toggleOn) bg = '#16a34a'
