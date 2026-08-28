@@ -638,6 +638,7 @@ body {
   background: linear-gradient(180deg, #33384a 0%, #171a22 40%, #0a0b10 100%);
   cursor: pointer;
   overflow: hidden;
+  perspective: 340px;
   box-shadow:
     0 14px 30px rgba(0, 0, 0, 0.65),
     0 3px 8px rgba(0, 0, 0, 0.5),
@@ -683,16 +684,38 @@ body {
     0 1px 2px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.35),
     inset 0 -8px 14px rgba(0, 0, 0, 0.3);
-  transition: transform 0.07s ease, box-shadow 0.07s ease, filter 0.07s ease;
+  transform-origin: 50% 12%;
+  transition:
+    transform 0.22s cubic-bezier(0.3, 2.2, 0.45, 0.9),
+    box-shadow 0.22s var(--ease),
+    filter 0.22s var(--ease);
 }
 
-.gkey:active .keyface {
-  transform: translateY(clamp(2px, 0.6vw, 3.5px)) scale(0.985);
+/* press: the keycap sinks into the chassis with a 3D tilt */
+.gkey.pressed .keyface {
+  transform: translateY(clamp(3px, 0.9vw, 5px)) rotateX(7deg) scale(0.96);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    inset 0 2px 6px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  filter: brightness(0.93);
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    inset 0 3px 9px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  filter: brightness(0.85);
+}
+
+.gkey.pressed {
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.55),
+    0 1px 4px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.18),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* icon dims slightly with the cap, like light falling off */
+.gkey.pressed .key-tile {
+  transform: scale(0.94);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -5px 9px rgba(0, 0, 0, 0.3);
 }
 
 /* glass / crystal key effect */

@@ -64,6 +64,7 @@ function GridKey({ index, cfg }: { index: number; cfg: KeyConfig | null }) {
   const press = useStore((s) => s.press)
   const select = useStore((s) => s.select)
   const addKey = useStore((s) => s.addKey)
+  const [pressed, setPressed] = useState(false)
 
   const onTap = () => {
     if (!editMode) {
@@ -76,7 +77,13 @@ function GridKey({ index, cfg }: { index: number; cfg: KeyConfig | null }) {
 
   return (
     <button
-      className={'gkey' + (cfg ? '' : ' ghost') + (editMode ? ' edit' : '')}
+      className={
+        'gkey' + (cfg ? '' : ' ghost') + (editMode ? ' edit' : '') + (pressed ? ' pressed' : '')
+      }
+      onPointerDown={() => setPressed(true)}
+      onPointerUp={() => setPressed(false)}
+      onPointerLeave={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
       onClick={onTap}
     >
       {cfg || editMode ? <KeyFace cfg={cfg} rt={rt} /> : null}
