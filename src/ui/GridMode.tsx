@@ -85,10 +85,67 @@ function GridKey({ index, cfg }: { index: number; cfg: KeyConfig | null }) {
   )
 }
 
+const DEFAULT_RELAY = 'https://elgato-relay.franwebdev-relay.workers.dev'
+
+function genSyncId(): string {
+  const abc = 'abcdefghjkmnpqrstuvwxyz23456789'
+  let s = ''
+  const buf = new Uint8Array(6)
+  crypto.getRandomValues(buf)
+  for (const b of buf) s += abc[b % abc.length]
+  return s
+}
+
 function BgPicker() {
   const gridBg = useStore((s) => s.gridBg)
   const setGridBg = useStore((s) => s.setGridBg)
+  const relayUrl = useStore((s) => s.link.url)
+  const showToast = useStore((s) => s.showToast)
   const [open, setOpen] = useState(false)
+  const [syncId, setSyncId] = useState(() => localStorage.getItem('sde-sync-id') || genSyncId())
+  const [syncing, setSyncing] = useState(false)
+
+  const syncBase = ((relayUrl || DEFAULT_RELAY).trim().replace(/\/+$/, '')).replace(/^wss/, 'https')
+
+  const saveId = (id: string) => {
+    const clean = id.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 10)
+    setSyncId(clean)
+    if (clean) localStorage.setItem('sde-sync-id', clean)
+  }
+
+  const uploadBg = async () => {
+    setSyncing(true)
+    try {
+      const res = await fetch(`${syncBase}/sync/${syncId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gridBg }),
+      })
+      showToast(res.ok ? 'Background synced ☁️' : 'Sync failed')
+    } catch {
+      showToast('Sync failed — check the relay URL')
+    } finally {
+      setSyncing(false)
+    }
+  }
+
+  const downloadBg = async () => {
+    setSyncing(true)
+    try {
+      const res = await fetch(`${syncBase}/sync/${syncId}`)
+      const data = (await res.json()) as { gridBg?: string }
+      if (data.gridBg) {
+        setGridBg(data.gridBg)
+        showToast('Background loaded ☁️')
+      } else {
+        showToast('Nothing saved under that code yet')
+      }
+    } catch {
+      showToast('Sync failed — check the relay URL')
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const onUpload = (file: File) => {
     const reader = new FileReader()
@@ -149,6 +206,23 @@ function BgPicker() {
               }}
             />
           </label>
+
+          <span className="field-label">Sync between devices ☁️</span>
+          <div className="row">
+            <input
+              className="sync-input"
+              value={syncId}
+              onChange={(e) => saveId(e.target.value)}
+              placeholder="sync code"
+              autoCapitalize="off"
+              autoCorrect="off"
+            />
+            <button className="btn" disabled={syncing} onClick={uploadBg} title="Save background to the cloud">⬆️</button>
+            <button className="btn" disabled={syncing} onClick={downloadBg} title="Load background from the cloud">⬇️</button>
+          </div>
+          <p className="hint-text">
+            Use the same code on your other device: ⬆️ to save, ⬇️ to load.
+          </p>
         </div>
       )}
     </div>
@@ -163,6 +237,7 @@ export function GridMode() {
   return (
     <div className="grid-wrap">
       <div className="grid-bg" style={bgStyle(gridBg)}>
+        {isImage(gridBg) && <span className="grid-scrim" />}
         {preset?.blobs && (
           <>
             <span className="blob b1" />

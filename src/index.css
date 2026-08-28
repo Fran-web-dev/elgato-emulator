@@ -358,6 +358,15 @@ body {
   overflow: hidden;
 }
 
+/* readability scrim over any background: plain paint, zero runtime cost */
+.grid-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 50%, rgba(8, 9, 14, 0.18) 40%, rgba(8, 9, 14, 0.62) 100%),
+    rgba(8, 9, 14, 0.34);
+}
+
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -529,6 +538,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
 }
 
 .keyface-big {
@@ -536,12 +546,18 @@ body {
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
 .keyface-sub {
   font-size: clamp(8px, 2.2vw, 11px);
   font-weight: 600;
   opacity: 0.85;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.keyface-img {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
 }
 
 .keyface-img {
@@ -632,6 +648,19 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.sync-input {
+  flex: 1;
+  min-width: 0;
+  background: #0c0e14;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e8eaf0;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 14px;
+  outline: none;
+  text-transform: lowercase;
 }
 
 /* ---------- modal ---------- */
